@@ -2,7 +2,10 @@
   <div id="tetris-page">
     <div id="tetris">
       <div id="game-grid">
-        <div :key="index" v-for="(block,index ) in tetris_grid" class="block" :style="{backgroundColor: block}"/>
+        <div :key="row_index" v-for="(row,row_index ) in tetris_grid">
+          <div :key="column_index" v-for="(column,column_index) in row" class="block"
+               :style="{backgroundColor: tetris_grid[column_index][row_index]}"/>
+        </div>
       </div>
       <div id="game-info">
         <div id="next-piece">
@@ -37,17 +40,19 @@ export default {
   }, methods: {
     start_game() {
       this.game_started = true
-      Call.post("/start-tetris", {
-        tetris_grid: this.tetris_grid,
-        score: this.score,
-        life: this.life,
-        next_piece: this.next_piece
-      }).then(response => {
-        this.tetris_grid = response.data.tetris_grid
-        this.score = response.data.score
-        this.life = response.data.life
-        this.next_piece = response.data.next_piece
-      })
+      setInterval(() => {
+        Call.post("/tetris", {
+          tetris_grid: this.tetris_grid,
+          score: this.score,
+          life: this.life,
+          next_piece: this.next_piece
+        }).then(response => {
+          this.tetris_grid = response.data.tetris_grid
+          this.score = response.data.score
+          this.life = response.data.life
+          this.next_piece = response.data.next_piece
+        })
+      }, 1000)
     }
   }
 }
@@ -63,8 +68,8 @@ export default {
   align-items: center;
 
   #tetris {
-    width: 60%;
-    height: 80%;
+    width: 60vw;
+    height: 50vw;
     padding: 10px;
     display: flex;
     justify-content: center;
@@ -81,8 +86,8 @@ export default {
 
 
     #game-grid {
-      width: 70%;
-      height: 90%;
+      width: 30vw;
+      height: 50vw;
       background-color: black;
       border: dimgrey ridge 20px;
 
@@ -106,8 +111,8 @@ export default {
         grid-template-columns: auto auto auto auto;
         grid-template-rows: auto auto auto auto;
         background-color: black;
-        height: 20%;
-        width: 90%;
+        height: 10vw;
+        width: 10vw;
         border: dimgrey ridge 5px;
       }
 
